@@ -14,7 +14,7 @@ inputs:
     description:
       The command used to build your documentation. Example
       "sphinx-build -b html . /_build/html"
-    required: false
+    required: true
     default: make html
   pre-build-command:
     description:
