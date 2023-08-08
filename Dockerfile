@@ -1,4 +1,4 @@
-FROM sphinxdoc/sphinx:2.4.4
+FROM sphinxdoc/sphinx:5.3.0
 
 LABEL "maintainer"="Brent Maranzano <brent_maranzano@yahoo.com>"
 
