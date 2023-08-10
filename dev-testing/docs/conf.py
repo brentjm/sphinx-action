@@ -33,6 +33,7 @@ release = '1.0.0'
 extensions = [
     'sphinx_rtd_theme',
     'myst_parser',  # Markdown support
+    'sphinx.ext.autodoc'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
