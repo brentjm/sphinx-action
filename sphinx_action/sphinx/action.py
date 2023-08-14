@@ -1,18 +1,36 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+This module runs the sphinx build command and parses the output into a list of
+status_check.CheckAnnotation objects.
+"""
+__author__ = "Brent Maranzano"
+__version__ = "1.0.0"
+__license__ = "MIT"
+
+
+import logging
 import collections
 import subprocess
 import tempfile
 import os
 import shlex
+import sphinx.status_check as status_check
 
-from sphinx_action import status_check
+logging.basicConfig(level=logging.INFO)
+
 
 
 GithubEnvironment = collections.namedtuple("GithubEnvironment", ["build_command"])
 
 
 def extract_line_information(line_information):
-    r"""Lines from sphinx log files look like this
+    r"""
+    This method is responsible for parsing out the line number and file name
+    from Sphinx log files.
 
+    Lines from sphinx log files look like this
         C:\Users\ammar\workspace\sphinx-action\tests\test_projects\warnings\index.rst:22: WARNING: Problems with "include" directive path:
         InputError: [Errno 2] No such file or directory: 'I_DONT_EXIST'.
 
@@ -21,7 +39,6 @@ def extract_line_information(line_information):
 
         /home/users/ammar/workspace/sphix-action/tests/test_projects/warnings/index.rst: Something went wrong with this whole ifle
 
-    This method is responsible for parsing out the line number and file name from these lines.
     """
     file_and_line = line_information.split(":")
     # This is a dirty windows specific hack to deal with drive letters in the
@@ -53,11 +70,11 @@ def parse_sphinx_warnings_log(logs):
     status_check.CheckAnnotation objects.
 
     Inputs look like this:
-/media/sf_shared/workspace/sphinx-action/tests/test_projects/warnings_and_errors/index.rst:19: WARNING: Error in "code-block" directive:
-maximum 1 argument(s) allowed, 2 supplied.
-
-/cpython/Doc/distutils/_setuptools_disclaimer.rst: WARNING: document isn't included in any toctree
-/cpython/Doc/contents.rst:5: WARNING: toctree contains reference to nonexisting document 'ayylmao'
+        /media/sf_shared/workspace/sphinx-action/tests/test_projects/warnings_and_errors/index.rst:19: WARNING: Error in "code-block" directive:
+        maximum 1 argument(s) allowed, 2 supplied.
+        
+        /cpython/Doc/distutils/_setuptools_disclaimer.rst: WARNING: document isn't included in any toctree
+        /cpython/Doc/contents.rst:5: WARNING: toctree contains reference to nonexisting document 'ayylmao'
     """
     annotations = []
 
@@ -116,7 +133,7 @@ def build_docs(build_command, docs_directory):
         #   Cause environment variables, including those with null values, to override macro assignments within makefiles.
         # which is exactly what we want.
         build_command += ["-e"]
-        print("[sphinx-action] Running: {}".format(build_command))
+        logging.info("[sphinx-action] Running: {build_command}")
 
         return_code = subprocess.call(
             build_command,
@@ -125,7 +142,7 @@ def build_docs(build_command, docs_directory):
         )
     else:
         build_command += shlex.split(sphinx_options)
-        print("[sphinx-action] Running: {}".format(build_command))
+        logging.info("[sphinx-action] Running: {build_command}")
 
         return_code = subprocess.call(
             build_command + shlex.split(sphinx_options), cwd=docs_directory
@@ -145,9 +162,7 @@ def build_all_docs(github_env, docs_directories):
     warnings = 0
 
     for docs_dir in docs_directories:
-        print("====================================")
-        print("Building docs in {}".format(docs_dir))
-        print("====================================")
+        logging.info(f"Building docs in {docs_dir}")
 
         return_code, annotations = build_docs(github_env.build_command, docs_dir)
         if return_code != 0:
@@ -161,7 +176,7 @@ def build_all_docs(github_env, docs_directories):
     status_message = "[sphinx-action] Build {} with {} warnings".format(
         "succeeded" if build_success else "failed", warnings
     )
-    print(status_message)
+    logging.info(status_message)
 
     if not build_success:
         raise RuntimeError("Build failed")
