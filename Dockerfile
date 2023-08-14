@@ -6,9 +6,9 @@ COPY sphinx_action /
 
 WORKDIR /
 
-ARG username
-RUN echo ${username}
-RUN useradd -ms /bin/bash $username
-USER brent
+#ARG username
+#RUN echo ${username}
+#RUN useradd -ms /bin/bash $username
+#USER brent
 
 ENTRYPOINT ["/entrypoint.py"]
