@@ -2,13 +2,14 @@ version: "3.8"
 services:
   sphinx-doc:
     environment:
-      # - INPUT_BUILD-COMMAND=make html
       - INPUT_BUILD-COMMAND=sphinx-build -b html . _build/html
       - INPUT_PRE-BUILD-COMMAND=pip install sphinx_rtd_theme myst_parser
       - INPUT_DOCS-FOLDER=docs/
     build: 
       context: ..
       dockerfile: Dockerfile
+      args: 
+        - username=${USERNAME}
     volumes:
     - type: bind
       source: ./docs
