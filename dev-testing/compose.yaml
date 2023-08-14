@@ -8,8 +8,6 @@ services:
     build: 
       context: ..
       dockerfile: Dockerfile
-      args: 
-        - username=${USERNAME}
     volumes:
     - type: bind
       source: ./docs
