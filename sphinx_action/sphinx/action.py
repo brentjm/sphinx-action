@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
@@ -26,9 +25,9 @@ GithubEnvironment = collections.namedtuple("GithubEnvironment", ["build_command"
 
 
 def extract_line_information(line_information):
-    r"""
-    This method is responsible for parsing out the line number and file name
-    from Sphinx log files.
+    """
+    This method is responsible for parsing out the line number and file
+    name from Sphinx log files.
 
     Lines from sphinx log files look like this
         C:\Users\ammar\workspace\sphinx-action\tests\test_projects\warnings\index.rst:22: WARNING: Problems with "include" directive path:
@@ -37,8 +36,13 @@ def extract_line_information(line_information):
         /home/users/ammar/workspace/sphix-action/tests/test_projects/warnings/index.rst:22: WARNING: Problems with "include" directive path:
         InputError: [Errno 2] No such file or directory: 'I_DONT_EXIST'.
 
-        /home/users/ammar/workspace/sphix-action/tests/test_projects/warnings/index.rst: Something went wrong with this whole ifle
+        /home/users/ammar/workspace/sphix-action/tests/test_projects/warnings/index.rst: Something went wrong with this whole file
 
+    Args:
+        line_information (str): A string containing the file name and line
+
+    Returns:
+        tuple: A tuple containing the file name and line number
     """
     file_and_line = line_information.split(":")
     # This is a dirty windows specific hack to deal with drive letters in the
@@ -66,7 +70,8 @@ def extract_line_information(line_information):
 
 
 def parse_sphinx_warnings_log(logs):
-    """Parses a sphinx file containing warnings and errors into a list of
+    """
+    Parses a sphinx file containing warnings and errors into a list of
     status_check.CheckAnnotation objects.
 
     Inputs look like this:
@@ -75,6 +80,12 @@ def parse_sphinx_warnings_log(logs):
         
         /cpython/Doc/distutils/_setuptools_disclaimer.rst: WARNING: document isn't included in any toctree
         /cpython/Doc/contents.rst:5: WARNING: toctree contains reference to nonexisting document 'ayylmao'
+
+    Args:
+        logs (list): A list of strings containing the sphinx logs
+
+    Returns:
+        list: A list of status_check.CheckAnnotation objects
     """
     annotations = []
 
@@ -113,6 +124,19 @@ def parse_sphinx_warnings_log(logs):
 
 
 def build_docs(build_command, docs_directory):
+    """
+    Builds the docs using the provided build command.
+
+    Args:
+        build_command (str): The command to build the docs
+        docs_directory (str): The directory containing the docs
+
+    Raises:
+        ValueError: If the build command is empty
+
+    Returns:
+        None
+    """
     if not build_command:
         raise ValueError("Build command may not be empty")
 
@@ -155,6 +179,19 @@ def build_docs(build_command, docs_directory):
 
 
 def build_all_docs(github_env, docs_directories):
+    """
+    Builds all the docs in the provided directories.
+
+    Args:
+        github_env (dict): The environment variables from GitHub
+        docs_directories (list): A list of directories containing docs
+
+    Raises:
+        ValueError: If no docs directories are provided
+        RuntimeError: If the build fails
+    Returns:
+        None
+    """
     if len(docs_directories) == 0:
         raise ValueError("Please provide at least one docs directory to build")
 
