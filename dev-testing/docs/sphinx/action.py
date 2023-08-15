@@ -15,7 +15,6 @@ import subprocess
 import tempfile
 import os
 import shlex
-import sphinx.status_check as status_check
 
 logging.basicConfig(level=logging.INFO)
 
